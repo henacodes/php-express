@@ -13,8 +13,10 @@ $app->route("/contacts", function () {
 
 $app->route("/blogs/create", $createBlog);
 $app->route("/blogs/get", $fetchBlogs);
-//$app->listen();
+$app->listen();
 
+
+/*
 $rawData = file_get_contents('php://input');
 $jsonData = json_decode($rawData);
 
@@ -26,3 +28,4 @@ var_dump($newObject);
 
 $method = $_SERVER['REQUEST_METHOD'];
 var_dump($method);
+*/

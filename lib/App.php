@@ -2,8 +2,8 @@
 
 
 
-include "./Request.php";
-include "./Response.php";
+require_once "Request.php";
+require_once "Response.php";
 class App
 {
 
@@ -18,13 +18,8 @@ class App
     $this->routes[$route] = $handler;
   }
 
-
-  public function listen()
+  private function generateRequest($url): Request
   {
-    $url = parse_url($_SERVER["REQUEST_URI"])["path"];
-
-
-    // set up  request object
     $request = new Request();
     $request->method = $_SERVER['REQUEST_METHOD'];
     $rawData = file_get_contents('php://input');
@@ -36,7 +31,21 @@ class App
     }
     $request->pathName = $url;
 
-    // set up response object
+    $request->headers["userAgent"] = $_SERVER['HTTP_USER_AGENT'];
+    $request->headers["contentType"] = $_SERVER['HTTP_CONTENT_TYPE'];
+    $request->headers["authorization"] = $_SERVER['HTTP_AUTHORIZATION'];
+
+    return $request;
+  }
+
+  public function listen()
+  {
+    $url = parse_url($_SERVER["REQUEST_URI"])["path"];
+
+
+
+    // set up reqest and response objects
+    $request = $this->generateRequest($url);
     $response = new Response();
 
     // call controller function

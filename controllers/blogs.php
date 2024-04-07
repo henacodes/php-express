@@ -1,7 +1,12 @@
 <?php
 
-$createBlog = function () {
+include "../lib/Request.php";
+include "../lib/Response.php";
 
+
+$createBlog = function (Request $req, Response  $res) {
+
+  var_dump($req);
   echo 'create blog endpoint';
 };
 
