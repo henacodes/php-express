@@ -3,6 +3,7 @@
 
 
 include "./Request.php";
+include "./Response.php";
 class App
 {
 
@@ -35,10 +36,11 @@ class App
     }
     $request->pathName = $url;
 
-
+    // set up response object
+    $response = new Response();
 
     // call controller function
     $handler = $this->routes[$url];
-    $handler();
+    $handler($request, $response);
   }
 }
