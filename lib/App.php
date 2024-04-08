@@ -4,6 +4,8 @@
 
 require_once "Request.php";
 require_once "Response.php";
+require_once "Route.php";
+require_once "PathToRegExp.php";
 class App
 {
 
@@ -13,12 +15,63 @@ class App
   {
   }
 
-  public function route($route,  callable $handler)
+  private  function match($inputRoute, string $method): ?array
   {
-    $this->routes[$route] = $handler;
+
+
+    foreach ($this->routes as $route) {
+      $routeRexExp = PathToRegexp::convert($route->invokeRoute()->path);
+      $match = PathToRegexp::match($routeRexExp, $inputRoute);
+      if (empty($match)) {
+        return null;
+      } else {
+
+        if ($method === $route->invokeRoute()->method) {
+          $params = array_combine($route->invokeRoute()->params, array_slice($match, 1));
+          return [
+            "params" => $params,
+            "handler" => $route->invokeRoute()->handler,
+            "method" => $route->invokeRoute()->method,
+          ];
+        } else {
+          return null;
+        }
+      }
+    }
   }
 
-  private function generateRequest($url): Request
+  public function route($route,  callable $handler, $method)
+  {
+    $params = $this->extractParams($route);
+    $newRoute = new Route($handler, $route, $method, $params);
+    $this->routes[] = $newRoute;
+  }
+
+
+  private function extractParams($route): array
+  {
+    $routeRexEx = PathToRegexp::convert($route);
+    $params = array_slice(PathToRegexp::match($routeRexEx, $route), 1);
+    return $params;
+  }
+  public function get($route, callable $handler)
+  {
+    $this->route($route, $handler, "GET");
+  }
+  public function post($route, callable $handler)
+  {
+    $this->route($route, $handler, "POST");
+  }
+  public function put($route, callable $handler)
+  {
+    $this->route($route, $handler, "PUT");
+  }
+  public function patch($route, callable $handler)
+  {
+    $this->route($route, $handler, "PATCH");
+  }
+
+  private function generateRequest(string $url): Request
   {
     $request = new Request();
     $request->method = $_SERVER['REQUEST_METHOD'];
@@ -40,14 +93,24 @@ class App
 
   public function listen()
   {
-    $url = parse_url($_SERVER["REQUEST_URI"])["path"];
+    $path = parse_url($_SERVER["REQUEST_URI"])["path"];
+
 
     // set up reqest and response objects
-    $request = $this->generateRequest($url);
+    $request = $this->generateRequest($path);
     $response = new Response();
 
+
+
     // call controller function
-    $handler = $this->routes[$url];
-    $handler($request, $response);
+    $route = $this->match((string) $path, $request->method);
+
+    if ($route) {
+      var_dump($route);
+      $route["handler"]();
+    } else {
+      $response->status(404);
+      echo "Not found";
+    }
   }
 }

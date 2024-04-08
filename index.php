@@ -7,12 +7,12 @@ require_once("./controllers/blogs.php");
 $app = new App();
 
 
-$app->route("/contacts", function () {
-  echo 'handler function called ';
+$app->get("/users/:id", function () {
+  echo "Handler called";
 });
 
-$app->route("/blogs/create", $createBlog);
-$app->route("/blogs/get", $fetchBlogs);
+
+
 $app->listen();
 
 
