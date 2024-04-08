@@ -42,8 +42,6 @@ class App
   {
     $url = parse_url($_SERVER["REQUEST_URI"])["path"];
 
-
-
     // set up reqest and response objects
     $request = $this->generateRequest($url);
     $response = new Response();

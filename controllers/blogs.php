@@ -6,8 +6,8 @@ include "../lib/Response.php";
 
 $createBlog = function (Request $req, Response  $res) {
 
-  var_dump($req);
-  echo 'create blog endpoint';
+  //var_dump($req);
+
 };
 
 $fetchBlogs = function () {
