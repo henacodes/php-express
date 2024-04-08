@@ -106,6 +106,8 @@ class App
     $route = $this->match((string) $path, $request->method);
 
     if ($route) {
+
+      $route["query"] = $_GET;
       var_dump($route);
       $route["handler"]();
     } else {
