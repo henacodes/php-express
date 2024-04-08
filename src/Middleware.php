@@ -24,13 +24,12 @@ class Middleware
 
     public function continueExecution()
     {
-        echo "ppppaa";
         $this->stopExecution = false;
     }
     public function handle()
     {
         foreach ($this->stack as $middleware) {
-            echo "hello";
+
             if ($this->callCount >= 1 && $this->stopExecution === true) {
                 return 0;
             } else {

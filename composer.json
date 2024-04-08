@@ -1,0 +1,11 @@
+{
+  "name": "henacodes/php-express",
+  "description": "A php implementation of express.js",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Henok Ayenew",
+      "email": "henacodes@gmail.com"
+    }
+  ]
+}
