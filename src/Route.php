@@ -1,5 +1,6 @@
 <?php
 
+namespace Henacodes\Pexpress;
 
 class Route
 {
@@ -16,7 +17,7 @@ class Route
     }
     public function invokeRoute()
     {
-        $newRoute = new stdClass;
+        $newRoute = new \stdClass;
 
         $newRoute->path = $this->path;
         $newRoute->method = $this->method;

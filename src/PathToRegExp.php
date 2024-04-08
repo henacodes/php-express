@@ -1,9 +1,13 @@
 <?php
 
 
-class PathToRegexp {
+namespace Henacodes\Pexpress;
 
-	private static function getRegexpSource($regexp) {
+class PathToRegexp
+{
+
+	private static function getRegexpSource($regexp)
+	{
 		$delimiter = substr($regexp, 0, 1);
 		$endDelimiterPos = strrpos($regexp, $delimiter);
 		$source = substr($regexp, 1, $endDelimiterPos - 1);
@@ -11,28 +15,29 @@ class PathToRegexp {
 	}
 
 	/**
-	* Normalize the given path string, returning a regular expression.
-	*
-	* An empty array should be passed in, which will contain the placeholder key
-	* names. For example `/user/:id` will then contain `["id"]`.
-	*
-	* @param  {(String)} path
-	* @param  {Array}                 keys
-	* @param  {Object}                options
-	* @return {RegExp}
-	*/
-	public static function convert($path, &$keys = array(), $options = array()) {
+	 * Normalize the given path string, returning a regular expression.
+	 *
+	 * An empty array should be passed in, which will contain the placeholder key
+	 * names. For example `/user/:id` will then contain `["id"]`.
+	 *
+	 * @param  {(String)} path
+	 * @param  {Array}                 keys
+	 * @param  {Object}                options
+	 * @return {RegExp}
+	 */
+	public static function convert($path, &$keys = array(), $options = array())
+	{
 		$strict = is_array($options) && array_key_exists("strict", $options) ? $options["strict"] : false;
 		$end = is_array($options) && array_key_exists("end", $options) ? $options["end"] : true;
 		$flags = is_array($options) && !empty($options["sensitive"]) ? "" : "i";
 		$index = 0;
 
-		if(is_array($path)) {
+		if (is_array($path)) {
 			// Map array parts into regexps and return their source. We also pass
 			// the same keys and options instance into every generation to get
 			// consistent matching groups before we join the sources together.
 
-			$path = array_map(function($value) use(&$keys, &$options) {
+			$path = array_map(function ($value) use (&$keys, &$options) {
 				return self::getRegexpSource(self::convert($value, $keys, $options));
 			}, $path);
 
@@ -57,38 +62,38 @@ class PathToRegexp {
 		$pathRegexp = "/" . implode("|", $pathRegexps) . "/";
 
 		// Alter the path string into a usable regexp.
-		$path = preg_replace_callback($pathRegexp, function($matches) use(&$keys, &$index) {
-			if(count($matches) > 1) {
+		$path = preg_replace_callback($pathRegexp, function ($matches) use (&$keys, &$index) {
+			if (count($matches) > 1) {
 				$escaped = $matches[1];
 			}
-			if(count($matches) > 2) {
+			if (count($matches) > 2) {
 				$prefix = $matches[2];
 			}
-			if(count($matches) > 3) {
+			if (count($matches) > 3) {
 				$key = $matches[3];
 			}
-			if(count($matches) > 4) {
+			if (count($matches) > 4) {
 				$capture = $matches[4];
 			}
-			if(count($matches) > 5) {
+			if (count($matches) > 5) {
 				$group = $matches[5];
 			}
-			if(count($matches) > 6) {
+			if (count($matches) > 6) {
 				$suffix = $matches[6];
 			} else {
 				$suffix = "";
 			}
-			if(count($matches) > 7) {
+			if (count($matches) > 7) {
 				$escape = $matches[7];
 			}
 
 			// Avoiding re-escaping escaped characters.
-			if(!empty($escaped)) {
+			if (!empty($escaped)) {
 				return $escaped;
 			}
 
 			// Escape regexp special characters.
-			if(!empty($escape)) {
+			if (!empty($escape)) {
 				return '\\' . $escape;
 			}
 
@@ -112,12 +117,12 @@ class PathToRegexp {
 			$capture = preg_replace('/([=!:$\/()])/', '\1', $subject);
 
 			// Allow parameters to be repeated more than once.
-			if(!empty($repeat)) {
+			if (!empty($repeat)) {
 				$capture = $capture . '(?:' . $prefix . $capture . ')*';
 			}
 
 			// Allow a parameter to be optional.
-			if(!empty($optional)) {
+			if (!empty($optional)) {
 				return '(?:' . $prefix . '(' . $capture . '))?';
 			}
 
@@ -133,39 +138,38 @@ class PathToRegexp {
 		// consistency. The slash is only valid at the very end of a path match, not
 		// anywhere in the middle. This is important for non-ending mode, otherwise
 		// "/test/" will match "/test//route".
-		if(!$strict) {
+		if (!$strict) {
 			$path = ($endsWithSlash ? substr($path, 0, -2) : $path) . '(?:\\/(?=$))?';
 		}
 
 		// In non-ending mode, we need prompt the capturing groups to match as much
 		// as possible by using a positive lookahead for the end or next path segment.
-		if(!$end) {
+		if (!$end) {
 			$path .= $strict && $endsWithSlash ? '' : '(?=\\/|$)';
 		}
 
 		return '/^' . $path . ($end ? '$' : '') . '/' . $flags;
 	}
 
-	public static function match($regexp, $route) {
+	public static function match($regexp, $route)
+	{
 		preg_match_all($regexp, $route, $matches);
-		if(count($matches) == 0) {
+		if (count($matches) == 0) {
 			$matches = null;
 		} else {
 			$areValuesNull = true;
-			foreach($matches as $key => $match) {
-				if(!empty($match)) {
+			foreach ($matches as $key => $match) {
+				if (!empty($match)) {
 					$matches[$key] = $match[0];
 					$areValuesNull = false;
 				} else {
 					$matches[$key] = null;
 				}
 			}
-			if($areValuesNull) {
+			if ($areValuesNull) {
 				$matches = null;
 			}
 		}
 		return $matches;
 	}
 }
-
-?>

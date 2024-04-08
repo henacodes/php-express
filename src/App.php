@@ -1,12 +1,16 @@
 <?php
 
 
+namespace Henacodes\Pexpress;
 
 require_once "Request.php";
 require_once "Response.php";
 require_once "Route.php";
 require_once "PathToRegExp.php";
 require_once "Middleware.php";
+
+
+
 class App
 {
 
@@ -80,7 +84,7 @@ class App
     $rawData = file_get_contents('php://input');
 
     if (empty($rawData)) {
-      $request->body = new stdClass();
+      $request->body = new \stdClass();
     } else {
       $request->body = json_decode($rawData);
     }

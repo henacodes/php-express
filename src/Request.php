@@ -1,5 +1,7 @@
 <?php
 
+namespace Henacodes\Pexpress;
+
 class Request
 {
     public $body;

@@ -1,20 +1,19 @@
 {
-  "name": "henacodes/pexpress",
-  "description": "A php implementation of express.js",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Henok Ayenew",
-      "email": "henacodes@gmail.com"
-    }
-  ],
-  "autoload": {
-    "psr-4": {
-      "henacodes\\pexpress\\": "src/"
-    }
-  },
-  "version": "0.5.0",
-  "require": {
-    "php": ">=8.0.0"
-  }
+    "name": "henacodes/pexpress",
+    "description": "A php implementation of express js",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Henacodes\\Pexpress\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "kirakos",
+            "email": "henacodes@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
 }

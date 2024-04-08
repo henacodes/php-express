@@ -1,6 +1,8 @@
 <?php
 
 
+namespace Henacodes\Pexpress;
+
 class Response
 {
     public function __construct()
