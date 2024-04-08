@@ -6,6 +6,7 @@ require_once "Request.php";
 require_once "Response.php";
 require_once "Route.php";
 require_once "PathToRegExp.php";
+require_once "Middleware.php";
 class App
 {
 
@@ -30,7 +31,7 @@ class App
           $params = array_combine($route->invokeRoute()->params, array_slice($match, 1));
           return [
             "params" => $params,
-            "handler" => $route->invokeRoute()->handler,
+            "handlers" => $route->invokeRoute()->handlers,
             "method" => $route->invokeRoute()->method,
           ];
         } else {
@@ -40,10 +41,10 @@ class App
     }
   }
 
-  public function route($route,  callable $handler, $method)
+  public function route($route, $method,  array $handlers)
   {
     $params = $this->extractParams($route);
-    $newRoute = new Route($handler, $route, $method, $params);
+    $newRoute = new Route($route, $method, $params, $handlers);
     $this->routes[] = $newRoute;
   }
 
@@ -54,21 +55,22 @@ class App
     $params = array_slice(PathToRegexp::match($routeRexEx, $route), 1);
     return $params;
   }
-  public function get($route, callable $handler)
+  public function get($route, callable ...$handlers)
   {
-    $this->route($route, $handler, "GET");
+    //var_dump($handlers);
+    $this->route($route, "GET", $handlers);
   }
-  public function post($route, callable $handler)
+  public function post($route, ...$handlers)
   {
-    $this->route($route, $handler, "POST");
+    $this->route($route, "POST", $handlers);
   }
-  public function put($route, callable $handler)
+  public function put($route, ...$handlers)
   {
-    $this->route($route, $handler, "PUT");
+    $this->route($route, "PUT", $handlers);
   }
-  public function patch($route, callable $handler)
+  public function patch($route, ...$handlers)
   {
-    $this->route($route, $handler, "PATCH");
+    $this->route($route, "PATCH", $handlers);
   }
 
   private function generateRequest(string $url): Request
@@ -109,7 +111,12 @@ class App
       $request->query = $_GET;
       $request->params = $route["params"];
 
-      $route["handler"]($request, $response);
+      $middlewares = new Middleware($request, $response);
+      foreach ($route["handlers"] as $handler) {
+        $middlewares->add($handler);
+      }
+
+      $middlewares->handle();
     } else {
       $response->status(404);
       echo "Not found";
