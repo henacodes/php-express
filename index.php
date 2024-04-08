@@ -7,7 +7,8 @@ require_once("./controllers/blogs.php");
 $app = new App();
 
 
-$app->get("/users/:id", function () {
+$app->get("/users/:id", function ($req, $res) {
+  var_dump($req);
   echo "Handler called";
 });
 

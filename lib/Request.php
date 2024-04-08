@@ -10,8 +10,9 @@ class Request
     public $pathName;
     public $query;
     public $protocol;
+    public $params;
 
-    public function __construct($body = [], $pathName = "/", $query = [], $method = "GET", $headers = [], $protocol = "http")
+    public function __construct($body = [], $pathName = "/", $query = [], $params = [], $method = "GET", $headers = [], $protocol = "http")
     {
         $this->body = $body;
         $this->headers = $headers;
@@ -19,5 +20,6 @@ class Request
         $this->query = $query;
         $this->method = $method;
         $this->protocol = $protocol;
+        $this->params = $params;
     }
 }

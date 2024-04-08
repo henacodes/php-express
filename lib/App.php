@@ -106,10 +106,10 @@ class App
     $route = $this->match((string) $path, $request->method);
 
     if ($route) {
+      $request->query = $_GET;
+      $request->params = $route["params"];
 
-      $route["query"] = $_GET;
-      var_dump($route);
-      $route["handler"]();
+      $route["handler"]($request, $response);
     } else {
       $response->status(404);
       echo "Not found";
